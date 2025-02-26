@@ -1,0 +1,75 @@
+version: '3.8'
+services:
+ dynamodb-local:
+   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+   image: "amazon/dynamodb-local:latest"
+   container_name: dynamodb-local
+   ports:
+     - "8000:8000"
+   volumes:
+     - "./docker/dynamodb:/home/dynamodblocal/data"
+   working_dir: /home/dynamodblocal
+   networks:
+     - shared_network
+
+ customer-service:
+    build:
+      context: ./customers-service
+      dockerfile: Dockerfile
+    depends_on:
+      - dynamodb-local
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    volumes:
+      - ./customers-service:/app
+    environment:
+      AWS_ACCESS_KEY_ID: 'fakeMyKeyId'
+      AWS_SECRET_ACCESS_KEY: 'fakeSecretAccessKey'
+      REGION: 'eu-west-1'
+    command: sh -c "uvicorn --host 0.0.0.0 --port 8080 app.main:app & python app/grpc_service/grpc_server.py"
+    restart: always
+    networks:
+      - shared_network
+
+ orders-service-db:
+    image: postgres:16.2
+    ports:
+      - "5432:5432"
+    volumes:
+      - orders-service-db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_SERVER=orders-service-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=orders-service
+    restart: always
+    networks:
+      - shared_network
+
+ orders-service:
+    build:
+      context: ./orders-service
+      dockerfile: Dockerfile
+    depends_on:
+      - orders-service-db
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./orders-service:/src
+      - ./orders-service/alembic.ini:/src/alembic.ini
+    environment:
+      - DATABASE_DSN=postgresql://postgres:password@orders-service-db:5432/orders-service
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000", "http://localhost:5000"]
+    command: sh -c "alembic upgrade head && uvicorn --host 0.0.0.0 --port 5000 src.main:app"
+    restart: always
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    driver: bridge
+
+volumes:
+  orders-service-db-data:

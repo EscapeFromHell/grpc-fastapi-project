@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package customer;
+
+service CustomerService {
+    rpc GetCustomer (CustomerRequest) returns (CustomerResponse);
+}
+
+message CustomerRequest {
+    string customer_id = 1;
+}
+
+message CustomerResponse {
+    bool exists = 1;
+}
