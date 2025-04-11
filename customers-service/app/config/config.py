@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api_v1"
+    URL: str = "http://orders-service:5000"
     DB: str = "dynamodb"
     ENDPOINT_URL: str = "http://dynamodb-local:8000"
     REGION_NAME: str = "eu-west-1"

@@ -2,7 +2,7 @@ import logging
 from concurrent import futures
 
 import grpc
-from app.core.repository import customers_repo
+from app.core.repository import CustomersRepository
 from app.grpc_service import service_pb2, service_pb2_grpc
 from app.utils import get_logger
 
@@ -10,8 +10,11 @@ logger = get_logger(__file__, log_level=logging.DEBUG)
 
 
 class CustomerService(service_pb2_grpc.CustomerServiceServicer):
+    def __init__(self):
+        self.customers_repo = CustomersRepository()
+
     def GetCustomer(self, request, context):
-        customer = customers_repo.get_customer(customer_id=request.customer_id)
+        customer = self.customers_repo.get_customer(customer_id=request.customer_id)
         exists = True if customer else False
         return service_pb2.CustomerResponse(exists=exists)
 

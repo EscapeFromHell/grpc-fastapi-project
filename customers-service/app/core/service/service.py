@@ -1,2 +1,2 @@
 class BaseService:
-    base_repository: str = None
+    base_repository = None

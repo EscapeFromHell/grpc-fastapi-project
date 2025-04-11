@@ -1,1 +1,1 @@
-from .customers import customers_repo
+from .customers import CustomersRepository

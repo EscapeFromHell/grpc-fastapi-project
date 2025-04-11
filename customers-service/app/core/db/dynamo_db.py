@@ -1,10 +1,8 @@
 import logging
 
 import boto3
-
 from app.config import settings
 from app.utils import get_logger
-
 
 logger = get_logger(__file__, log_level=logging.INFO)
 boto3.set_stream_logger(name="boto3", level=logging.DEBUG)
@@ -32,10 +30,8 @@ class DynamoDB:
             )
             table.wait_until_exists()
             logger.info(f"Table 'customers' created")
-            print("Done")
         else:
             logger.info("Table 'customers' already exists")
-            print("Already created")
 
 
 dynamo_db = DynamoDB()

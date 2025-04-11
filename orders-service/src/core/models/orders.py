@@ -3,11 +3,11 @@ from decimal import Decimal
 
 import sqlalchemy.orm as so
 from sqlalchemy import func
-from src.core.models import Base
+from src.core.models import BaseModel
 from src.core.schemas import Order as OrderSchema
 
 
-class Order(Base):
+class Order(BaseModel):
     __tablename__ = "orders"
     id: so.Mapped[int] = so.mapped_column(primary_key=True, index=True)
     customer_id: so.Mapped[str] = so.mapped_column(nullable=False)

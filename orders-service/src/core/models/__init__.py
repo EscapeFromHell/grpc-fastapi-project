@@ -1,2 +1,2 @@
-from .base import Base
+from .base import BaseModel
 from .orders import Order

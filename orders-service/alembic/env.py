@@ -18,8 +18,8 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from src.core.models import Base
-target_metadata = Base.metadata
+from src.core.models import BaseModel
+target_metadata = BaseModel.metadata
 # target_metadata = None
 
 # other values from the config, defined by the needs of env.py,
